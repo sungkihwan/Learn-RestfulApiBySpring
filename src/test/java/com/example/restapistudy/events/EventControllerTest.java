@@ -1,5 +1,6 @@
 package com.example.restapistudy.events;
 
+import com.example.restapistudy.commons.TestDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -32,9 +33,10 @@ class EventControllerTest {
     ObjectMapper objectMapper;
 
     @Test
+    @TestDescription("정상 인풋")
     public void createEvent() throws Exception {
         //given
-        EventDto event = EventDto.builder()
+        EventDto eventDto = EventDto.builder()
                 .name("kihwan")
                 .description("Rest Master")
                 .beginEnrollmentDateTime(LocalDateTime.of(2021,8,25,11,24))
@@ -50,7 +52,7 @@ class EventControllerTest {
         mockMvc.perform(post("/api/events/")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaTypes.HAL_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(event)))
+                        .content(objectMapper.writeValueAsString(eventDto)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").exists())
@@ -62,7 +64,8 @@ class EventControllerTest {
     }
 
     @Test
-    public void createEventBadRequest() throws Exception {
+    @TestDescription("unknown 값이 들어온 경우에 에러가 발생하는 케이스 -> yml 파일 수정해서 유연하게 받아줄 수도 있음")
+    public void createEvent_BadRequest_UnknownInput() throws Exception {
         //given
         Event event = Event.builder()
                 .id(100)
@@ -87,5 +90,76 @@ class EventControllerTest {
                         .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @TestDescription("입력 값이 비어있는 경우에 에러가 발생")
+    public void createEvent_BadRequest_EmptyInput() throws Exception {
+        //given
+        EventDto eventDto = EventDto.builder()
+                .build();
+
+        mockMvc.perform(post("/api/events/")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaTypes.HAL_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventDto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @TestDescription("입력 값이 잘못된 경우에 에러가 발생")
+    public void createEvent_BadRequest_WrongInput() throws Exception {
+        //given
+        EventDto eventDto = EventDto.builder()
+                .name("kihwan")
+                .description("Rest Master")
+                .beginEnrollmentDateTime(LocalDateTime.of(2021,8,25,11,24))
+                .closeEnrollmentDateTime(LocalDateTime.of(2021,8,25,12,24))
+                .beginEventDateTime(LocalDateTime.of(2021,8,26,11,24))
+                // 끝나는 날짜가 더 빠른 잘못된 인풋
+                .endEventDateTime(LocalDateTime.of(2021,8,20,11,24))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("강촌 더존")
+                .build();
+
+        mockMvc.perform(post("/api/events/")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaTypes.HAL_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventDto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @TestDescription("에러를 보여줌")
+    public void createEvent_BadRequest_WrongInput1111() throws Exception {
+        //given
+        EventDto eventDto = EventDto.builder()
+                .name("kihwan")
+                .description("Rest Master")
+                .beginEnrollmentDateTime(LocalDateTime.of(2021,8,25,11,24))
+                .closeEnrollmentDateTime(LocalDateTime.of(2021,8,25,12,24))
+                .beginEventDateTime(LocalDateTime.of(2021,8,26,11,24))
+                .endEventDateTime(LocalDateTime.of(2021,8,27,11,24))
+                .basePrice(10000)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("강촌 더존")
+                .build();
+
+        mockMvc.perform(post("/api/events/")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaTypes.HAL_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(eventDto)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$[0].objectName").exists())
+                //.andExpect(jsonPath("$[0].field").exists())
+                .andExpect(jsonPath("$[0].defaultMessage").exists())
+                .andExpect(jsonPath("$[0].code").exists());
+                //.andExpect(jsonPath("$[0].rejectedValue").exists());
     }
 }
