@@ -1,2 +1,5 @@
-package com.example.restapistudy.events;public enum EventStatus {
+package com.example.restapistudy.events;
+
+public enum EventStatus {
+    DRAFT, PUBLISHED, BEGAN_ENROLLMEND, CLOSED_ENROLLMENT, STARTED, ENDED
 }
