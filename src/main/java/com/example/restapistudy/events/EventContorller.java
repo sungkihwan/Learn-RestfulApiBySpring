@@ -17,6 +17,12 @@ import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+// HATEOAS
+// ResourceSupport is now RepresentationModel
+// Resource is now EntityModel
+// Resources is now CollectionModel
+// PagedResources is now PagedModel
+
 @RestController
 @RequestMapping
 @RequiredArgsConstructor
@@ -31,7 +37,6 @@ public class EventContorller {
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body(errors);
         }
-
         // Validation
         eventValidator.validate(eventDto, errors);
         // error body에 담아서 클라이언트에 응답
@@ -43,12 +48,11 @@ public class EventContorller {
         Event event = modelMapper.map(eventDto, Event.class);
         // update 비즈니스 로직 실행
         event.update();
-        // 데이터 저장
         Event newEvent = this.eventRepository.save(event);
-        // 저장한 값으로 URI 생성하여 body에 실어 응답
+        // 저장한 값으로 URI 생성하여 body에 응답
         WebMvcLinkBuilder selfLinkBuilder = linkTo(EventContorller.class).slash(newEvent.getId());
         URI createdUri = selfLinkBuilder.toUri();
-        // HATEOAS로 링크 생성
+        // HATEOAS 링크 생성
         EntityModel<Event> eventEntityModel = EntityModel.of(event,
                 selfLinkBuilder.slash(event.getId()).withSelfRel(),
                 selfLinkBuilder.withRel("query-events"),
