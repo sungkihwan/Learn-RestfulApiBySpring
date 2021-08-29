@@ -58,9 +58,12 @@ class EventControllerTest {
                 .andExpect(jsonPath("id").exists())
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE))
-                .andExpect(jsonPath("id").value(Matchers.not(100)))
-                .andExpect(jsonPath("free").value(Matchers.not(true)))
-                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()));
+                .andExpect(jsonPath("offline").value(true))
+                .andExpect(jsonPath("free").value(false))
+                .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.query-events").exists())
+                .andExpect(jsonPath("_links.update-event").exists());
     }
 
     @Test
@@ -134,7 +137,7 @@ class EventControllerTest {
     }
 
     @Test
-    @TestDescription("에러를 보여줌")
+    @TestDescription("어떤 에러인지 클라이언트에 보여줌")
     public void createEvent_BadRequest_WrongInput1111() throws Exception {
         //given
         EventDto eventDto = EventDto.builder()
