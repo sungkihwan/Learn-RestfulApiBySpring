@@ -1,5 +1,7 @@
 package com.example.restapistudy.events;
 
+import com.example.restapistudy.commons.EntityResource;
+import com.example.restapistudy.commons.ErrorsResource;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -32,22 +35,19 @@ public class EventContorller {
     private final EventRepository eventRepository;
     private final ModelMapper modelMapper;
     private final EventValidator eventValidator;
-    private final EntityModels entityModels;
+    private final EntityResource entityResource;
 
     @PostMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
 
         // error 메시지에 index 링크추가
         if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(entityModels.getErrorEntityModel(errors));
+            return ResponseEntity.badRequest().body(ErrorsResource.modelOf(errors));
         }
 
-        // Validation
         eventValidator.validate(eventDto, errors);
-
-        // error body에 담아서 클라이언트에 응답
         if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(entityModels.getErrorEntityModel(errors));
+            return ResponseEntity.badRequest().body(ErrorsResource.modelOf(errors));
         }
 
         // modelMapper로 Dto를 Entity로 변환
@@ -62,13 +62,23 @@ public class EventContorller {
         URI createdUri = selfLinkBuilder.toUri();
 
         // HATEOAS 링크 생성
-        return ResponseEntity.created(createdUri).body(entityModels.getEventEntityModels(event,selfLinkBuilder));
+        return ResponseEntity.created(createdUri).body(entityResource.getEventEntityModels(event,selfLinkBuilder));
     }
 
-    @GetMapping("/api/events")
+    @GetMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity getEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
         Page<Event> page = this.eventRepository.findAll(pageable);
-        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entityModels::getEventEntityModelSelf);
+        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entityResource::getEventEntityModelSelf);
         return ResponseEntity.ok(pagedModel);
+    }
+
+    @GetMapping(value = "/api/events/{id}", produces = MediaTypes.HAL_JSON_VALUE)
+    public ResponseEntity getEvent(@PathVariable Integer id) {
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if (optionalEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Event event = optionalEvent.get();
+        return ResponseEntity.ok(entityResource.getEventEntityModelSelf(event));
     }
 }

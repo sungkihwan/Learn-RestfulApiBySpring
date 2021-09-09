@@ -210,10 +210,10 @@ class EventControllerTest {
                         .content(objectMapper.writeValueAsString(eventDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$[0].objectName").exists())
+                .andExpect(jsonPath("errors[0].objectName").exists())
                 //.andExpect(jsonPath("$[0].field").exists())
-                .andExpect(jsonPath("$[0].defaultMessage").exists())
-                .andExpect(jsonPath("$[0].code").exists())
+                .andExpect(jsonPath("errors[0].defaultMessage").exists())
+                .andExpect(jsonPath("errors[0].code").exists())
                 .andExpect(jsonPath("_links.index").exists());
                 //.andExpect(jsonPath("$[0].rejectedValue").exists());
     }
@@ -235,11 +235,37 @@ class EventControllerTest {
         ;
     }
 
-    private void generateEvent(int i) {
+    @Test
+    public void getEvent() throws Exception {
+        Event event = this.generateEvent(100);
+
+        this.mockMvc.perform(get("/api/events/{id}", event.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists());
+    }
+
+    @Test
+    public void getEvent404() throws Exception {
+        Event event = this.generateEvent(100);
+        this.mockMvc.perform(get("/api/events/2623424"))
+                .andExpect(status().isNotFound());
+    }
+
+    private Event generateEvent(int i) {
         Event event = Event.builder()
                 .name("event" + i)
                 .description("test event")
                 .build();
-        this.eventRepository.save(event);
+        return this.eventRepository.save(event);
+    }
+
+    @Test
+    public void index() throws Exception {
+        this.mockMvc.perform(get("/api/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("_links.events").exists());
     }
 }

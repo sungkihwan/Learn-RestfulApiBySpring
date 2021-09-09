@@ -1,14 +1,17 @@
-package com.example.restapistudy.events;
+package com.example.restapistudy.commons;
 
-import com.example.restapistudy.index.IndexController;
+import com.example.restapistudy.events.Event;
+import com.example.restapistudy.events.EventContorller;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.validation.Errors;
+import org.springframework.stereotype.Component;
+
+import javax.swing.text.html.parser.Entity;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-public class EntityModels {
+@Component
+public class EntityResource extends EntityModel<Entity> {
 
     public EntityModel<Event> getEventEntityModelSelf(Event event) {
         WebMvcLinkBuilder selfLinkBuilder = linkTo(EventContorller.class)
@@ -27,12 +30,5 @@ public class EntityModels {
                 selfLink.withRel("update-event"),
                 selfLink.slash("docs/index.html#resource-events-create").withRel("profile"));
         return eventEntityModel;
-    }
-
-    public EntityModel<Errors> getErrorEntityModel(Errors errors) {
-        WebMvcLinkBuilder selfLink = linkTo(methodOn(IndexController.class).index());
-        EntityModel<Errors> errorsEntityModel = EntityModel.of(errors,
-                selfLink.withRel("index"));
-        return errorsEntityModel;
     }
 }
