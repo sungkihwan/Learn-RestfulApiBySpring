@@ -13,22 +13,36 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @Component
 public class EntityResource extends EntityModel<Entity> {
 
-    public EntityModel<Event> getEventEntityModelSelf(Event event) {
-        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventContorller.class)
+    public EntityModel<Event> eventEntityModelSelf(Event event) {
+        WebMvcLinkBuilder selfLink = linkTo(EventContorller.class)
                 .slash("api")
                 .slash("events")
                 .slash(event.getId());
         EntityModel<Event> eventEntityModel = EntityModel.of(event,
-                selfLinkBuilder.withSelfRel());
+                selfLink.withSelfRel());
         return eventEntityModel;
     }
 
-    public EntityModel<Event> getEventEntityModels(Event event, WebMvcLinkBuilder selfLink) {
+    public EntityModel<Event> eventEntityModelCreate(Event event, WebMvcLinkBuilder selfLink) {
         EntityModel<Event> eventEntityModel = EntityModel.of(event,
                 selfLink.slash(event.getId()).withSelfRel(),
                 selfLink.withRel("query-events"),
                 selfLink.withRel("update-event"),
                 selfLink.slash("docs/index.html#resource-events-create").withRel("profile"));
+        return eventEntityModel;
+    }
+
+    public EntityModel<Event> eventEntityModelUpdate(Event event) {
+        WebMvcLinkBuilder selfLink = linkTo(EventContorller.class)
+                .slash("api")
+                .slash("events")
+                .slash(event.getId());
+
+        EntityModel<Event> eventEntityModel = EntityModel.of(event,
+                selfLink.slash(event.getId()).withSelfRel(),
+                selfLink.withRel("query-events"),
+                selfLink.withRel("update-event"),
+                selfLink.slash("docs/index.html#resource-events-update").withRel("profile"));
         return eventEntityModel;
     }
 }
