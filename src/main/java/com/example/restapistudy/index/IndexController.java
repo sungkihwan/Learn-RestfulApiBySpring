@@ -1,6 +1,6 @@
 package com.example.restapistudy.index;
 
-import com.example.restapistudy.events.EventContorller;
+import com.example.restapistudy.controller.EventContorller;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

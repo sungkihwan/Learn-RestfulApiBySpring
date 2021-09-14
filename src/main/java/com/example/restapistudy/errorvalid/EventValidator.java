@@ -1,5 +1,6 @@
-package com.example.restapistudy.events;
+package com.example.restapistudy.errorvalid;
 
+import com.example.restapistudy.dto.EventDto;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 

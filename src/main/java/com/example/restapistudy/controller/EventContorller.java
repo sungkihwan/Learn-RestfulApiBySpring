@@ -1,7 +1,11 @@
-package com.example.restapistudy.events;
+package com.example.restapistudy.controller;
 
 import com.example.restapistudy.commons.EntityResource;
-import com.example.restapistudy.commons.ErrorsResource;
+import com.example.restapistudy.errorvalid.ErrorsResource;
+import com.example.restapistudy.events.Event;
+import com.example.restapistudy.dto.EventDto;
+import com.example.restapistudy.repository.EventRepository;
+import com.example.restapistudy.errorvalid.EventValidator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;

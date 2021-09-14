@@ -1,4 +1,4 @@
-package com.example.restapistudy.commons;
+package com.example.restapistudy.errorvalid;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;

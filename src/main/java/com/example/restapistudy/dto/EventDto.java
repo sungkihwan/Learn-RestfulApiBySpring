@@ -1,4 +1,4 @@
-package com.example.restapistudy.events;
+package com.example.restapistudy.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

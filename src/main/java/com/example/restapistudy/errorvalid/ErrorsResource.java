@@ -1,4 +1,4 @@
-package com.example.restapistudy.commons;
+package com.example.restapistudy.errorvalid;
 
 import com.example.restapistudy.index.IndexController;
 import org.springframework.hateoas.EntityModel;

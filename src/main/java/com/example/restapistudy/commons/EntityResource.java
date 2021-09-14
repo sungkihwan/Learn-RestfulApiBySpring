@@ -1,7 +1,7 @@
 package com.example.restapistudy.commons;
 
 import com.example.restapistudy.events.Event;
-import com.example.restapistudy.events.EventContorller;
+import com.example.restapistudy.controller.EventContorller;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;

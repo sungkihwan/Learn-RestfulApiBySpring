@@ -29,6 +29,9 @@ public class Event extends RepresentationModel<Event> {
     @Enumerated(EnumType.STRING)
     private EventStatus eventStatus = EventStatus.DRAFT;
 
+    @ManyToOne
+    private Account manager;
+
     public void update() {
         // Update free 상태 값
         if (this.basePrice == 0 && this.maxPrice == 0) {
@@ -43,5 +46,4 @@ public class Event extends RepresentationModel<Event> {
             this.offline = true;
         }
     }
-
 }
